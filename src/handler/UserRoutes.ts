@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { validatePassword, validateUsername } from '../helper/validator';
+import verifyToken from '../middleware/verifyToken';
 import { User, UserStore } from '../models/User';
 
 const store = new UserStore();
@@ -50,7 +51,7 @@ const create = async (req: Request, res: Response) => {
     if (validate) {
       throw new Error(validate);
     }
-    validate = validatePassword(data.username);
+    validate = validatePassword(data.password);
     if (validate) {
       throw new Error(validate);
     }
@@ -75,10 +76,10 @@ const destroy = async (req: Request, res: Response) => {
 };
 
 const userRoutes = (app: express.Application) => {
-  app.get('/users', index);
-  app.get('/users/:id', show);
-  app.post('/users', create);
-  app.delete('/users/:id', destroy);
+  app.get('/users', verifyToken, index);
+  app.get('/users/:id', verifyToken, show);
+  app.post('/users', verifyToken, create);
+  app.delete('/users/:id', verifyToken, destroy);
 };
 
 export default userRoutes;

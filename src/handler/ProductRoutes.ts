@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import verifyToken from '../middleware/verifyToken';
 import { Product, ProductStore } from '../models/Product';
 
 const store = new ProductStore();
@@ -32,7 +33,7 @@ const create = async (req: Request, res: Response) => {
     const data: Product = {
       id: null,
       name: req.body.name,
-      price: req.body.password,
+      price: req.body.price,
       category: req.body.category,
     };
 
@@ -65,8 +66,8 @@ const destroy = async (req: Request, res: Response) => {
 const productRoutes = (app: express.Application) => {
   app.get('/products', index);
   app.get('/products/:id', show);
-  app.post('/products', create);
-  app.delete('/products/:id', destroy);
+  app.post('/products', verifyToken, create);
+  app.delete('/products/:id', verifyToken, destroy);
 };
 
 export default productRoutes;

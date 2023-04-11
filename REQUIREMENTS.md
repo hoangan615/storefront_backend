@@ -20,9 +20,6 @@ These are the notes from a meeting with the frontend developer that describe wha
 - Create [token required]: POST /products
 - Delete [token required]: DELETE /products/:id
 
-- Top 5 most popular products: GET /products/top
-- Products by category (args: product category): GET /products?category="text"
-
 #### Users
 
 - Index [token required]: GET /users
@@ -32,32 +29,57 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 #### Orders
 
-- Create Order by user (args: user id)[token required]: POST /user/:userId/orders
-- Add Product to Order by user (args: user id, order id)[token required]: POST /user/:userId/orders/:id
-- Complete the Order by user (args: user id, order id)[token required]: POST /user/:userId/orders/:id/complete
-- Current Orders by user (args: user id)[token required]: GET: /users/:userId/orders
-- Completed Orders by user (args: user id)[token required] GET: /users/:userId/orders?status=complete
+- Create Order by user (args: user id)[token required]: POST /users/:userId/orders
+- Add Product to Order by user (args: user id, order id)[token required]: POST /users/:userId/orders/:id
+- Complete the Order by user (args: user id, order id)[token required]: POST /users/:userId/orders/:id/complete
+- Get Orders by user & orderId (args: user id, order id)[token required]: GET: /users/:userId/orders/:id
+- Delete Orders by user & orderId (args: user id, order id)[token required]: DELETE: /users/:userId/orders/:id
+- All Orders by user (args: user id, order id)[token required]: GET: /users/:userId/orders
+- Current Orders by user (active status) (args: user id)[token required]: GET: /users/:userId/orders?status=active
+- Completed Orders by user(completed status) (args: user id)[token required] GET: /users/:userId/orders?status=completed
 
 ## Data Shapes
 
-#### Product
+#### Admin
 
-- id
-- name
-- price
-- [OPTIONAL] category
+```
+id SERIAL PRIMARY KEY,
+username VARCHAR(32) UNIQUE,
+password VARCHAR
+```
 
 #### User
 
-- id
-- firstName
-- lastName
-- password
+```
+id SERIAL PRIMARY KEY,
+firstName VARCHAR(24),
+lastName VARCHAR(24),
+username VARCHAR(32) UNIQUE,
+password VARCHAR
+```
 
-#### Orders
+#### Product
 
-- id
-- id of each product in the order
-- quantity of each product in the order
-- user_id
-- status of order (active or complete)
+```
+id SERIAL PRIMARY KEY,
+name VARCHAR(64) NOT NULL,
+price Integer NOT NULL,
+category VARCHAR(64)
+```
+
+#### Order
+
+```
+id SERIAL PRIMARY KEY,
+status VARCHAR(15),
+userId bigint REFERENCES users(id)
+```
+
+#### Order_Product
+
+```
+id SERIAL PRIMARY KEY,
+quantity integer,
+orderId bigint REFERENCES orders(id),
+productId bigint REFERENCES products(id)
+```

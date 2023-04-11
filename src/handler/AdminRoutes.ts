@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Admin, AdminStore } from '../models/Admin';
 import jwt from 'jsonwebtoken';
 import { validatePassword, validateUsername } from '../helper/validator';
+import verifyToken from '../middleware/verifyToken';
 const { TOKEN_SECRET = '' } = process.env;
 
 const store = new AdminStore();
@@ -70,7 +71,7 @@ const authenticate = async (req: Request, res: Response) => {
       return;
     }
     const token = jwt.sign({ user: u }, TOKEN_SECRET);
-    res.json(token);
+    res.json({ token: token });
   } catch (err) {
     res.status(400);
     res.json({ message: `${err}` });
@@ -78,9 +79,9 @@ const authenticate = async (req: Request, res: Response) => {
 };
 
 const adminRoutes = (app: express.Application) => {
-  app.get('/admins', index);
-  app.get('/admins/:id', show);
-  app.post('/admins', create);
+  app.get('/admins', verifyToken, index);
+  app.get('/admins/:id', verifyToken, show);
+  app.post('/admins', verifyToken, create);
   app.post('/admins/login', authenticate);
 };
 
