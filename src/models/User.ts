@@ -1,18 +1,20 @@
-import client from '../db/client';
+import Client from '../database/Client';
+import bcrypt from 'bcrypt';
+
+const { PASSWORD_SECRET, SALT_ROUND = '10' } = process.env;
 
 export type User = {
-  id: number;
-  title: string;
-  author: string;
-  totalPages: number;
-  summary: string;
+  id: number | undefined | null;
+  firstName: string | undefined | null;
+  lastName: string | undefined | null;
+  username: string;
+  password: string;
 };
 
-export class Users {
+export class UserStore {
   async index(): Promise<User[]> {
     try {
-      // @ts-ignore
-      const conn = await client.connect();
+      const conn = await Client.connect();
       const sql = 'SELECT * FROM users';
 
       const result = await conn.query(sql);
@@ -21,39 +23,14 @@ export class Users {
 
       return result.rows;
     } catch (err) {
-      throw new Error(`Could not get Users. Error: ${err}`);
+      throw new Error(`Could not get Users. ${err}`);
     }
   }
 
-  // async create(b: Book): Promise<Book> {
-  //   try {
-  //     const sql =
-  //       'INSERT INTO books (title, author, total_pages, summary) VALUES($1, $2, $3, $4) RETURNING *';
-  //     // @ts-ignore
-  //     const conn = await Client.connect();
-
-  //     const result = await conn.query(sql, [
-  //       b.title,
-  //       b.author,
-  //       b.totalPages,
-  //       b.summary,
-  //     ]);
-
-  //     const book = result.rows[0];
-
-  //     conn.release();
-
-  //     return book;
-  //   } catch (err) {
-  //     throw new Error(`Could not add new book ${title}. Error: ${err}`);
-  //   }
-  // }
-
-  async get(id: string): Promise<User> {
+  async show(id: string): Promise<User> {
     try {
       const sql = 'SELECT * FROM users WHERE id=($1)';
-      // @ts-ignore
-      const conn = await client.connect();
+      const conn = await Client.connect();
 
       const result = await conn.query(sql, [id]);
 
@@ -61,15 +38,57 @@ export class Users {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error(`Could not find User ${id}. Error: ${err}`);
+      throw new Error(`Could not find User ${id}. ${err}`);
+    }
+  }
+
+  async create(b: User): Promise<User> {
+    try {
+      const usesql = 'SELECT * FROM users WHERE username=($1)';
+      const conn = await Client.connect();
+
+      const result = await conn.query(usesql, [b.username]);
+
+      if (result.rows.length > 0) {
+        throw new Error(`Exist user with username ${b.username}`);
+      }
+
+      conn.release();
+    } catch (err) {
+      throw new Error(`Could not add new user ${b.username}. ${err}`);
+    }
+
+    try {
+      const sql =
+        'INSERT INTO users (firstName, lastName, username, password) VALUES($1, $2, $3, $4) RETURNING *';
+      const conn = await Client.connect();
+      const hash = await bcrypt.hash(
+        b.password + PASSWORD_SECRET,
+        parseInt(SALT_ROUND)
+      );
+
+      const result = await conn.query(sql, [
+        b.firstName,
+        b.lastName,
+        b.username,
+        hash,
+      ]);
+
+      const user = result.rows[0];
+
+      conn.release();
+
+      return user;
+    } catch (err) {
+      console.log('User: Create failed: ', err);
+      throw new Error(`Could not add new User ${b.username}. ${err}`);
     }
   }
 
   async delete(id: string): Promise<User> {
     try {
       const sql = 'DELETE FROM users WHERE id=($1)';
-      // @ts-ignore
-      const conn = await client.connect();
+      const conn = await Client.connect();
 
       const result = await conn.query(sql, [id]);
 
@@ -77,7 +96,7 @@ export class Users {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error(`Could not delete User ${id}. Error: ${err}`);
+      throw new Error(`Could not delete User ${id}. ${err}`);
     }
   }
 }

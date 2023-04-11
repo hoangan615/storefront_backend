@@ -1,6 +1,6 @@
-import { User, Users } from '../../models/User';
+import { User, UserStore } from '../../models/User';
 
-const store = new Users();
+const store = new UserStore();
 
 describe('Book Model', () => {
   it('should have an index method', () => {
