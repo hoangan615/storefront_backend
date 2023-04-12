@@ -9,5 +9,6 @@
         "displayStacktrace": "all"
       }
     }
-  ]
+  ],
+  "random": false
 }

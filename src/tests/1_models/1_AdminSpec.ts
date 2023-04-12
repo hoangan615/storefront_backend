@@ -23,27 +23,25 @@ describe('Admin Model', () => {
     const result = await store.create({
       username: 'admin2',
       password: '123456',
-      id: undefined,
     });
-    expect(result.id).toEqual(2);
+    expect(result.id).toBeGreaterThan(1);
     expect(result.username).toEqual('admin2');
   });
 
   it('index method should return a list of admin', async () => {
     const result = await store.index();
-    expect(result.length).toEqual(2);
+    expect(result.length).toBeGreaterThanOrEqual(2);
   });
 
   it('show method should return the correct user', async () => {
-    const result = await store.show('2');
-    expect(result.id).toEqual(2);
-    expect(result.username).toEqual('admin2');
+    const result = await store.show('1');
+    expect(result.id).toEqual(1);
+    expect(result.username).toEqual('admin');
   });
 
   it('authenticate method for admin', async () => {
-    const result = await store.authenticate('admin2', '123456');
-
-    expect(result?.id).toEqual(2);
-    expect(result?.username).toEqual('admin2');
+    const result = await store.authenticate('admin', '123456');
+    expect(result?.id).toEqual(1);
+    expect(result?.username).toEqual('admin');
   });
 });

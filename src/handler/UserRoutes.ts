@@ -18,7 +18,7 @@ const index = async (_req: Request, res: Response) => {
 
 const show = async (req: Request, res: Response) => {
   try {
-    const data = await store.show(req.params.id);
+    const data = await store.show(parseInt(req.params.id));
     if (!data) {
       res.status(404).json({ message: 'Data not found' });
       return;
@@ -38,7 +38,6 @@ const create = async (req: Request, res: Response) => {
       password: req.body.password,
       first_name: req.body.first_name,
       last_name: req.body.last_name,
-      id: undefined,
     };
 
     if (
@@ -72,7 +71,7 @@ const create = async (req: Request, res: Response) => {
 
 const destroy = async (req: Request, res: Response) => {
   try {
-    const deleted = await store.delete(req.params.id);
+    const deleted = await store.delete(parseInt(req.params.id));
     res.json(deleted);
   } catch (err) {
     res.status(400);

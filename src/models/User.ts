@@ -4,9 +4,9 @@ import bcrypt from 'bcrypt';
 const { PASSWORD_SECRET, SALT_ROUND = '10' } = process.env;
 
 export type User = {
-  id: number | undefined | null;
-  first_name: string | undefined | null;
-  last_name: string | undefined | null;
+  id?: number;
+  first_name?: string;
+  last_name?: string;
   username: string;
   password: string;
 };
@@ -27,7 +27,7 @@ export class UserStore {
     }
   }
 
-  async show(id: string): Promise<User> {
+  async show(id: number): Promise<User> {
     try {
       const sql = 'SELECT * FROM users WHERE id=($1)';
       const conn = await Client.connect();
@@ -84,7 +84,7 @@ export class UserStore {
     }
   }
 
-  async delete(id: string): Promise<User> {
+  async delete(id: number): Promise<User> {
     try {
       const sql = 'DELETE FROM users WHERE id=($1)';
       const conn = await Client.connect();

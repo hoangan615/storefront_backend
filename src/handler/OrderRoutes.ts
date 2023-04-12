@@ -6,7 +6,7 @@ const store = new OrderStore();
 
 const index = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const userId = parseInt(req.params.userId);
     const status = ((req.query.status || '') as string).toLowerCase();
 
     if (!userId) {
@@ -20,7 +20,7 @@ const index = async (req: Request, res: Response) => {
       });
       return;
     }
-    const results = await store.index(userId, status?.toLowerCase());
+    const results = await store.index(userId, status);
 
     res.json(results);
   } catch (err) {
@@ -36,7 +36,7 @@ const show = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'userId is required.' });
       return;
     }
-    const data = await store.show(userId, id);
+    const data = await store.show(parseInt(userId), parseInt(id));
     if (!data) {
       res.status(404).json({ message: 'Data not found' });
       return;
@@ -51,9 +51,8 @@ const show = async (req: Request, res: Response) => {
 const create = async (req: Request, res: Response) => {
   try {
     const data: Order = {
-      id: null,
       items: req.body.items,
-      user_id: req.params.userId,
+      user_id: parseInt(req.params.userId),
       status: 'active',
     };
     if (!data.user_id) {
@@ -76,7 +75,7 @@ const destroy = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'userId is required.' });
       return;
     }
-    const deleted = await store.delete(userId, id);
+    const deleted = await store.delete(parseInt(userId), parseInt(id));
     res.json(deleted);
   } catch (err) {
     res.status(400);
@@ -106,8 +105,8 @@ const addProduct = async (req: Request, res: Response) => {
 
   try {
     const addedProduct = await store.addProduct(
-      userId,
-      id,
+      parseInt(userId),
+      parseInt(id),
       product_id,
       quantity
     );
@@ -130,7 +129,10 @@ const completeOrder = async (req: Request, res: Response) => {
   }
 
   try {
-    const addedProduct = await store.completeOrder(userId, id);
+    const addedProduct = await store.completeOrder(
+      parseInt(userId),
+      parseInt(id)
+    );
     res.json(addedProduct);
   } catch (err) {
     res.status(400);

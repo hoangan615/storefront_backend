@@ -2,18 +2,18 @@ import Client from '../database/Client';
 import { OrderProduct } from './OrderProduct';
 
 export type Order = {
-  id: number | undefined | null;
-  items: OrderProduct[];
-  user_id: string;
+  id?: number;
+  items?: OrderProduct[];
+  user_id: number;
   status: 'active' | 'completed';
 };
 
 export class OrderStore {
-  async index(userId: string, status: string): Promise<Order[]> {
+  async index(userId: number, status: string): Promise<Order[]> {
     try {
       const conn = await Client.connect();
       let sql = 'SELECT * FROM orders where user_id=($1)';
-      const params = [userId];
+      const params: unknown[] = [userId];
       if (['active', 'completed'].includes(status)) {
         sql += ' AND status=($2)';
         params.push(status);
@@ -35,7 +35,7 @@ export class OrderStore {
     }
   }
 
-  async show(userId: string, orderId: string): Promise<Order> {
+  async show(userId: number, orderId: number): Promise<Order> {
     try {
       const sql = 'SELECT * FROM orders WHERE id=($1) and user_id=($2)';
       const conn = await Client.connect();
@@ -68,7 +68,7 @@ export class OrderStore {
 
       const data = result.rows[0];
 
-      if (b.items?.length > 0) {
+      if (b?.items && b?.items?.length > 0) {
         const sql =
           'INSERT INTO order_products (quantity, order_id, product_id) VALUES($1, $2, $3) RETURNING *';
         for (const item of b.items) {
@@ -84,7 +84,7 @@ export class OrderStore {
     }
   }
 
-  async delete(userId: string, orderId: string): Promise<Order> {
+  async delete(userId: number, orderId: number): Promise<Order> {
     try {
       const conn = await Client.connect();
 
@@ -103,11 +103,11 @@ export class OrderStore {
   }
 
   async addProduct(
-    userId: string,
-    orderId: string,
-    productId: string,
+    userId: number,
+    orderId: number,
+    productId: number,
     quantity: number
-  ): Promise<Order> {
+  ): Promise<OrderProduct> {
     try {
       const ordersql = 'SELECT * FROM orders WHERE id=($1) AND user_id=($2)';
       const conn = await Client.connect();
@@ -161,7 +161,7 @@ export class OrderStore {
     }
   }
 
-  async completeOrder(userId: string, orderId: string): Promise<Order> {
+  async completeOrder(userId: number, orderId: number): Promise<Order> {
     // get order to see if it is open
     try {
       const ordersql = 'SELECT * FROM orders WHERE id=($1) AND user_id=($2)';
@@ -173,7 +173,7 @@ export class OrderStore {
       if (!order) {
         throw new Error(`Cannot find Order ${orderId}`);
       }
-      if (order.status !== 'Active') {
+      if (order.status !== 'active') {
         throw new Error(`Cannot complete Order ${orderId}`);
       }
 
@@ -185,7 +185,7 @@ export class OrderStore {
     try {
       const status = 'completed';
       const sql =
-        'UPDATE orders SET status=($1) WHERE id=($2) AND user_id=($3)';
+        'UPDATE orders SET status=($1) WHERE id=($2) AND user_id=($3) RETURNING *';
       const conn = await Client.connect();
 
       const result = await conn.query(sql, [status, orderId, userId]);

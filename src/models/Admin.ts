@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 const { PASSWORD_SECRET, SALT_ROUND = '10' } = process.env;
 
 export type Admin = {
-  id: number | undefined | null;
+  id?: number;
   username: string;
   password: string;
 };
@@ -67,7 +67,6 @@ export class AdminStore {
       const result = await conn.query(sql, [b.username, hash]);
 
       const user = result.rows[0];
-      console.log('user', user);
 
       conn.release();
 
