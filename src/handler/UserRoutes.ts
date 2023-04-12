@@ -36,14 +36,19 @@ const create = async (req: Request, res: Response) => {
     const data: User = {
       username: req.body.username,
       password: req.body.password,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
       id: undefined,
     };
 
-    if (!data.username || !data.password || !data.firstName || !data.lastName) {
+    if (
+      !data.username ||
+      !data.password ||
+      !data.first_name ||
+      !data.last_name
+    ) {
       throw new Error(
-        'username, password, firstName and lastName must be required'
+        'username, password, first_name and last_name must be required'
       );
     }
 

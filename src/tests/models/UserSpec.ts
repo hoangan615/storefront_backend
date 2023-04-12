@@ -2,42 +2,36 @@ import { User, UserStore } from '../../models/User';
 
 const store = new UserStore();
 
-describe('Book Model', () => {
-  it('should have an index method', () => {
-    expect(true).toBe(true);
+describe('User Model', () => {
+  it('should have a index method', () => {
+    expect(store.index).toBeDefined();
   });
 
   it('should have a show method', () => {
-    expect(false).toBe(false);
+    expect(store.show).toBeDefined();
   });
 
-  // it('should have a create method', () => {
-  //   expect(store.index).toBeDefined();
-  // });
+  it('should have a create method', () => {
+    expect(store.create).toBeDefined();
+  });
 
-  // it('should have a update method', () => {
-  //   expect(store.index).toBeDefined();
-  // });
+  it('should have a delete method', () => {
+    expect(store.delete).toBeDefined();
+  });
 
-  // it('should have a delete method', () => {
-  //   expect(store.index).toBeDefined();
-  // });
-
-  // it('create method should add a book', async () => {
-  //   const result = await store.create({
-  //     title: 'Bridge to Terabithia',
-  //     totalPages: 250,
-  //     author: 'Katherine Paterson',
-  //     summary: 'Childrens',
-  //   });
-  //   expect(result).toEqual({
-  //     id: '1',
-  //     title: 'Bridge to Terabithia',
-  //     totalPages: 250,
-  //     author: 'Katherine Paterson',
-  //     summary: 'Childrens',
-  //   });
-  // });
+  it('create method should add a book', async () => {
+    const result = await store.create({
+      username: 'anvh',
+      password: '123456',
+      first_name: 'An',
+      last_name: 'Vo',
+      id: undefined,
+    });
+    expect(result.id).toEqual(1);
+    expect(result.username).toEqual('anvh');
+    expect(result.first_name).toEqual('An');
+    expect(result.last_name).toEqual('Vo');
+  });
 
   // it('index method should return a list of books', async () => {
   //   const result = await store.index();

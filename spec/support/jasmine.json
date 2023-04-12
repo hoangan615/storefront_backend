@@ -1,6 +1,6 @@
 {
   "spec_dir": "src",
-  "spec_files": ["**/*[sS]pec.js"],
+  "spec_files": ["**/*[sS]pec.ts"],
   "helpers": ["helpers/**/*.ts"],
   "reporters": [
     {
@@ -9,7 +9,5 @@
         "displayStacktrace": "all"
       }
     }
-  ],
-  "stopSpecOnExpectationFailure": false,
-  "random": true
+  ]
 }

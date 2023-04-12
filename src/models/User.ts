@@ -5,8 +5,8 @@ const { PASSWORD_SECRET, SALT_ROUND = '10' } = process.env;
 
 export type User = {
   id: number | undefined | null;
-  firstName: string | undefined | null;
-  lastName: string | undefined | null;
+  first_name: string | undefined | null;
+  last_name: string | undefined | null;
   username: string;
   password: string;
 };
@@ -60,7 +60,7 @@ export class UserStore {
 
     try {
       const sql =
-        'INSERT INTO users (firstName, lastName, username, password) VALUES($1, $2, $3, $4) RETURNING *';
+        'INSERT INTO users (first_name, last_name, username, password) VALUES($1, $2, $3, $4) RETURNING *';
       const conn = await Client.connect();
       const hash = await bcrypt.hash(
         b.password + PASSWORD_SECRET,
@@ -68,8 +68,8 @@ export class UserStore {
       );
 
       const result = await conn.query(sql, [
-        b.firstName,
-        b.lastName,
+        b.first_name,
+        b.last_name,
         b.username,
         hash,
       ]);

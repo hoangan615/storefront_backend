@@ -55,10 +55,10 @@ const create = async (req: Request, res: Response) => {
     const data: Order = {
       id: null,
       items: req.body.items,
-      userId: req.params.userId,
+      user_id: req.params.userId,
       status: 'active',
     };
-    if (!data.userId) {
+    if (!data.user_id) {
       res.status(404).json({ message: 'userId is required.' });
       return;
     }
@@ -88,7 +88,7 @@ const destroy = async (req: Request, res: Response) => {
 
 const addProduct = async (req: Request, res: Response) => {
   const { id, userId } = req.params;
-  const { productId, quantity } = req.body;
+  const { product_id, quantity } = req.body;
   if (!userId) {
     res.status(404).json({ message: 'userId is required.' });
     return;
@@ -97,8 +97,8 @@ const addProduct = async (req: Request, res: Response) => {
     res.status(400).json({ message: 'orderId is required.' });
     return;
   }
-  if (!productId) {
-    res.status(400).json({ message: 'productId is required.' });
+  if (!product_id) {
+    res.status(400).json({ message: 'product_id is required.' });
     return;
   }
   if (quantity <= 0) {
@@ -110,7 +110,7 @@ const addProduct = async (req: Request, res: Response) => {
     const addedProduct = await store.addProduct(
       userId,
       id,
-      productId,
+      product_id,
       quantity
     );
     res.json(addedProduct);

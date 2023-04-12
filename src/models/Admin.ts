@@ -77,21 +77,6 @@ export class AdminStore {
     }
   }
 
-  // async delete(id: string): Promise<Admin> {
-  //   try {
-  //     const sql = 'DELETE FROM admins WHERE id=($1)';
-  //     const conn = await Client.connect();
-
-  //     const result = await conn.query(sql, [id]);
-
-  //     conn.release();
-
-  //     return result.rows[0];
-  //   } catch (err) {
-  //     throw new Error(`Could not delete admins ${id}. Error: ${err}`);
-  //   }
-  // }
-
   async authenticate(
     username: string,
     password: string

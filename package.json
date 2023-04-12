@@ -7,8 +7,9 @@
     "build": "tsc",
     "dev": "nodemon src/index.ts",
     "start": "npm run build && node dist/index.js",
+    "test:prepare": "db-migrate db:drop full_stack_test && db-migrate db:create full_stack_test && db-migrate --env test up",
     "test": "jasmine-ts",
-    "test-db": "ENV=test && npx tsc && db-migrate --env test up && jasmine && db-migrate db:drop test",
+    "test-db": "npm run test:prepare && ENV=test jasmine-ts",
     "lint": "eslint './src/**/*.ts'",
     "prettier": "prettier --config .prettierrc './src/**/*.ts' --write"
   },
