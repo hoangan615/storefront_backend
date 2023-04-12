@@ -82,7 +82,7 @@ export class AdminStore {
     password: string
   ): Promise<Admin | undefined | null> {
     try {
-      const sql = 'SELECT password FROM admins WHERE username=($1)';
+      const sql = 'SELECT * FROM admins WHERE username=($1)';
       const conn = await Client.connect();
 
       const result = await conn.query(sql, [username]);

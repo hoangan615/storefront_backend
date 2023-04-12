@@ -80,7 +80,6 @@ export class UserStore {
 
       return user;
     } catch (err) {
-      console.log('User: Create failed: ', err);
       throw new Error(`Could not add new User ${b.username}. ${err}`);
     }
   }

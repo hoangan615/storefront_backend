@@ -18,7 +18,6 @@ export class OrderStore {
         sql += ' AND status=($2)';
         params.push(status);
       }
-      console.log('sql: ' + sql);
 
       const result = await conn.query(sql, params);
       const orderProductSql =
@@ -134,7 +133,6 @@ export class OrderStore {
         'SELECT * FROM order_products WHERE order_id=($1) AND product_id=($2)';
       const itemsResult = await conn.query(checkItemSql, [orderId, productId]);
       const existItem = itemsResult.rows[0];
-      console.log('itemsResult', itemsResult);
 
       if (!existItem) {
         const sql =
@@ -150,7 +148,6 @@ export class OrderStore {
           'UPDATE order_products SET quantity=($1) WHERE order_id=($2) AND product_id=($3) RETURNING *';
 
         const newQuantity = quantity + existItem.quantity;
-        console.log('quantity + existItem.quantity', newQuantity);
 
         const result = await conn.query(sql, [newQuantity, orderId, productId]);
         conn.release();

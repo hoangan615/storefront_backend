@@ -8,13 +8,11 @@ const index = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const status = ((req.query.status || '') as string).toLowerCase();
-    console.log('status', status);
 
     if (!userId) {
       res.status(404).json({ message: 'userId is required.' });
       return;
     }
-    console.log('status', status);
 
     if (status && !['active', 'completed'].includes(status)) {
       res.status(400).json({
