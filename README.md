@@ -86,6 +86,13 @@ Open the terminal, run (default host: `localhost:3000`):
 npm run dev
 ```
 
+Admin Account to login system:
+
+```
+username: admin
+password: 123456
+```
+
 To run production, run:
 
 ```
