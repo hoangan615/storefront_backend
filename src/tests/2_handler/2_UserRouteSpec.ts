@@ -41,7 +41,7 @@ describe('Test User Endpoint', () => {
   });
 
   it('Create User fail, un-authorize', async () => {
-    const response = await request.post('/admins').send({
+    const response = await request.post('/users').send({
       username: 'user6',
       password: '123456',
       last_name: 'last name',

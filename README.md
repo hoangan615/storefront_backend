@@ -1,54 +1,141 @@
 # Storefront Backend Project
 
-## Getting Started
+## Setup Project
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+### 1. Run `npm install` to install package dependencies
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+### 2. Setup PostgreSQL & create database user
 
-## Steps to Completion
+- Setup PostgreSQL on premise or use PostgreSQL docker
+- Create database user & database:
 
-### 1. Plan to Meet Requirements
+  ```sql
+  CREATE USER full_stack_user WITH PASSWORD 'password123';
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+  CREATE DATABASE full_stack_dev;
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+  \c full_stack_dev
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+  GRANT ALL PRIVILEGES ON DATABASE full_stack_dev TO full_stack_user;
+  ```
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+### 3. Create `.env` file
 
-### 2.  DB Creation and Migrations
+```
+PORT=3000
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+POSTGRES_HOST=127.0.0.1
+POSTGRES_DB=full_stack_dev
+POSTGRES_USER=full_stack_user
+POSTGRES_PASSWORD=password123
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+POSTGRES_TEST_DB=full_stack_test
 
-### 3. Models
+PASSWORD_SECRET=123456
+SALT_ROUND=10
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+TOKEN_SECRET=123456
+```
 
-### 4. Express Handlers
+- `PORT`: the port number to run server api
+- `POSTGRES_HOST`: the host of database server
+- `POSTGRES_DB`: the database name
+- `POSTGRES_USER`: the username of database server
+- `POSTGRES_PASSWORD`: the password of database server
+- `POSTGRES_TEST_DB`: the test database name
+- `PASSWORD_SECRET`: the key to hash user password with `bcrypt`. (Default: `123456`, if change, please update password for admin in migration script `migrations/sqls/20230411091801-admin-table-up.sql`)
+- `SALT_ROUND`: the parameter to for `bcrypt`
+- `TOKEN_SECRET`: the secret to check `jwt` token
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+### 4. Database migrations
 
-### 5. JWTs
+- Update `database.json` file
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
+  ```json
+  {
+    "dev": {
+      "driver": "pg",
+      "host": "127.0.0.1",
+      "database": "full_stack_dev",
+      "user": "full_stack_user",
+      "password": "password123"
+    },
+    "test": {
+      "driver": "pg",
+      "host": "127.0.0.1",
+      "database": "full_stack_test",
+      "user": "full_stack_user",
+      "password": "password123"
+    }
+  }
+  ```
 
-### 6. QA and `README.md`
+- Update `.env` file if necessary
+- Update script `test:prepare` in `package.json` file if using other test database (default: `full_stack_test`)
+- Run migrations script
 
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
+  ```
+  db-migrate up
+  ```
 
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+## Run the project
+
+Open the terminal, run (default host: `localhost:3000`):
+
+```
+npm run dev
+```
+
+To run production, run:
+
+```
+npm run dev
+```
+
+## Run test for the project
+
+Open the terminal, run:
+
+```
+npm run test
+```
+
+- Note: please make sure setup `.env` file and `database.json` file`
+
+## API Endpoints
+
+### 1. Admin
+
+- [GET] /admins [admin token required]
+- [GET] /admins/:id [admin token required]
+- [POST] /admins [admin token required]
+- [POST] /admins/login
+
+### 2. User
+
+- [GET] /users [admin token required]
+- [GET] /users/:id [admin token required]
+- [POST] /users [admin token required]
+- [DELETE] /users/:id [admin token required]
+
+### 3. Product
+
+- [GET] /products
+- [GET] /products/:id
+- [POST] /products [admin token required]
+- [DELETE] /products/:id [admin token required]
+
+### 4. Order
+
+- [GET] /users/:userId/orders [admin token required]
+- [GET] /users/:userId/orders/:id [admin token required]
+- [POST] /users/:userId/orders [admin token required]
+- [DELETE] /users/:userId/orders/:id [admin token required]
+- [POST] /users/:userId/orders/:id/products [admin token required]
+- [POST] /users/:userId/orders/:id/complete [admin token required]
+
+\*\* Note: request & response of the API, please refer to `StoreFront_API.postman_collection.json` file
+
+## Connect to API
+
+Using postman collection that import from `StoreFront_API.postman_collection.json` file
